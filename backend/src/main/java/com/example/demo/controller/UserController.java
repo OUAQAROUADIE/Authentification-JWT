@@ -12,21 +12,20 @@ import java.util.List;
 
 @RestController
  @AllArgsConstructor
-@RequestMapping("/users")
 public class UserController {
 
 
     @Autowired
     private Userservice userservice;
 
-    @PostMapping
+    @PostMapping("/register/users")
     public ResponseEntity<User> savedUser(@RequestBody User user){
         User saveduser = userservice.savedUser(user);
         System.out.println(":::::::::::::::::::"+saveduser);
     return ResponseEntity.ok(saveduser);
     }
 
-    @PatchMapping("/{id}")
+    @PatchMapping("/users/{id}")
     public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody UserDto userDto) {
         try {
             User updatedUser = userservice.updateUser(id, userDto);
@@ -36,7 +35,7 @@ public class UserController {
         }
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/users/{id}")
     public ResponseEntity<User> getUser(@PathVariable Long id){
         try{
             User user = userservice.getUser(id);
@@ -53,7 +52,7 @@ public class UserController {
         return ResponseEntity.ok(users);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/users/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable Long id){
         try{
             userservice.deleteUser(id);

@@ -26,4 +26,7 @@ public class User {
     private String Mail;
     private String Password;
     private String Role;
+
+    private boolean confirmed =false;
+    private Boolean isFirstAuth = true;
 }

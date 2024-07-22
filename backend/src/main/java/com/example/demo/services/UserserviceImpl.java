@@ -92,13 +92,8 @@ public class UserserviceImpl implements  Userservice{
 
     @Override
     public User getUser(Long id) {
-
-        try{
-            User user = userRepository.getById(id);
+            User user = userRepository.findById(id).orElse(null);
             return user;
-        }catch (Exception e){
-            throw new IllegalArgumentException("user not found");
-        }
 
     }
 
