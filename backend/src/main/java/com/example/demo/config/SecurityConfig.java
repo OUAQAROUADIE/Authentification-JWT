@@ -55,7 +55,6 @@ public class SecurityConfig {
                 .authorizeHttpRequests(ar -> ar
                         .requestMatchers("/auth/login/**").permitAll()// Allow access to login endpoint
                         .requestMatchers("/register/**").permitAll()
-                        .requestMatchers("/users/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter)))
