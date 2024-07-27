@@ -1,8 +1,10 @@
 package com.example.demo.services;
 
+import com.example.demo.Repository.PasswordResetTokenRepository;
 import com.example.demo.Repository.UserRepository;
 import com.example.demo.Repository.VerificationTokenRepository;
 import com.example.demo.dto.UserDto;
+import com.example.demo.entities.PasswordResetToken;
 import com.example.demo.entities.User;
 import com.example.demo.entities.VerificationToken;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,9 @@ public class UserserviceImpl implements  Userservice{
     @Autowired
     private VerificationTokenRepository verificationTokenRepository;
 
+
+    @Autowired
+    PasswordResetTokenRepository passwordResetTokenRepository;
     private  PasswordEncoder passwordEncoder;
 
     public UserserviceImpl( ) {
@@ -103,4 +108,46 @@ public class UserserviceImpl implements  Userservice{
         List<User> users = userRepository.findAll();
         return users;
     }
+
+
+
+
+    @Override
+    @Transactional
+    public void createPasswordResetTokenForUser(User user, String token) {
+        PasswordResetToken existingToken = passwordResetTokenRepository.findByUser(user);
+
+        if (existingToken != null) {
+            // Si un token existe pour cet utilisateur
+            if (existingToken.isExpired()) {
+                // Si le token existant n'est pas expiré, mettre à jour le token existant
+                existingToken.setExpiryDate(PasswordResetToken.calculateExpiryDate(PasswordResetToken.EXPIRATION));
+                existingToken.updateToken(token);
+                passwordResetTokenRepository.save(existingToken);
+                return; // Sortir de la méthode après la mise à jour
+            } else {
+                // Si le token existant est expiré, supprimer le token existant
+                passwordResetTokenRepository.delete(existingToken);
+            }
+        }
+
+
+    }
+    @Override
+    public User findUserByEmail(final String email) {
+        return userRepository.findByMail(email);
+    }
+
+    @Override
+    public boolean checkIfValidOldPassword(final User user, final String oldpassword){
+        return passwordEncoder.matches(oldpassword, user.getPassword());
+    }
+
+    @Override
+    public void changeUserPassword(final User user, final String newPassword){
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+    }
+
+
 }
