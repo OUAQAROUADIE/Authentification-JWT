@@ -7,7 +7,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
@@ -47,7 +46,7 @@ public class PasswordController {
         if (user != null) {
             final String token = UUID.randomUUID().toString();
             userservice.createPasswordResetTokenForUser(user, token);
-            mailSender.send(constructResetTokenEmail(getAppUrl(request), null, token, user));
+            mailSender.send(constructResetTokenEmail(getAppUrl(request), request.getLocale(), token, user));
         } else {
             return ResponseEntity.badRequest().body("User not found");
         }
@@ -69,13 +68,11 @@ public class PasswordController {
         return ResponseEntity.ok("Password is changed successfully");
     }
 
-
-    private String constructResetTokenEmail(String contextPath, String token, User user) {
-        String url = contextPath + "/user/changePassword?id=" + user.getId() + "&token=" + token;
-        String message = messages.getMessage("message.resetPassword", null, LocaleContextHolder.getLocale());
-        return message + " \r\n" + url;
+    private SimpleMailMessage constructResetTokenEmail(final String contextPath, final Locale locale, final String token, final User user) {
+        final String url = contextPath + "/user/changePassword?token=" + token;
+        final String message = messages.getMessage("message.resetPassword", null, locale);
+        return constructEmail("Reset Password", message + " \r\n" + url, user);
     }
-
 
     private SimpleMailMessage constructEmail(String subject, String body, User user) {
         final SimpleMailMessage email = new SimpleMailMessage();
