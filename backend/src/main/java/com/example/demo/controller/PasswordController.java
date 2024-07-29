@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
@@ -40,10 +41,10 @@ public class PasswordController {
     private Environment env;
 
     @Autowired
-    PasswordResetTokenService passwordResetTokenService;
+    private PasswordResetTokenService passwordResetTokenService;
 
     @Autowired
-    PasswordResetTokenRepository passwordResetTokenRepository;
+    private PasswordResetTokenRepository passwordResetTokenRepository;
 
     @PostMapping("/user/resetpassword")
     public ResponseEntity<?> resetPassword(HttpServletRequest request, @RequestParam("email") String userEmail) {
@@ -56,53 +57,46 @@ public class PasswordController {
         PasswordResetToken passwordResetToken = new PasswordResetToken(token, user);
         passwordResetTokenRepository.save(passwordResetToken);
 
-        mailSender.send(constructResetTokenEmail(token, user));
+        // Send reset password email
+        mailSender.send(constructResetTokenEmail(request.getLocale(), token, user));
 
         Map<String, String> response = new HashMap<>();
         response.put("message", "Password reset link sent to " + userEmail);
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/user/changePassword")
-    public ResponseEntity<Map<String, String>> validateToken(@RequestParam("token") String token) {
-        String result = passwordResetTokenService.validatePasswordResetToken(token);
-        Map<String, String> response = new HashMap<>();
-        if (result != null) {
-            response.put("status", "error");
-            response.put("message", "Invalid or expired token");
-            return ResponseEntity.badRequest().body(response);
-        } else {
-            response.put("status", "success");
-            response.put("token", token);
-            return ResponseEntity.ok(response);
-        }
-    }
-
     @PostMapping("/user/passwordupdate")
     public ResponseEntity<?> updatePassword(@RequestParam("token") String token, @Valid @RequestBody PasswordDto passwordDto) {
+        // Validate the token
         String result = passwordResetTokenService.validatePasswordResetToken(token);
         if (result != null) {
             return ResponseEntity.badRequest().body("Invalid token");
         }
 
+        // Retrieve the user associated with the token
         User user = userservice.getUserByPasswordResetToken(token);
         if (user == null) {
             return ResponseEntity.badRequest().body("Invalid token");
         }
 
+        // Update the user's password
         userservice.changeUserPassword(user, passwordDto.getNewPassword());
-        return ResponseEntity.ok("Password is changed successfully");
+
+        // Optionally, remove the token after successful password update
+        passwordResetTokenService.deleteByToken(token);
+
+        return ResponseEntity.ok("Password updated successfully");
     }
 
-    private SimpleMailMessage constructResetTokenEmail(final String token, final User user) {
-        final String frontendUrl = "http://localhost:3001/changePassword";
-        final String url = frontendUrl + "?token=" + token;
-        final String message = "Please click the link below to reset your password: \r\n" + url;
-        return constructEmail("Reset Password", message, user);
+    private SimpleMailMessage constructResetTokenEmail(Locale locale, String token, User user) {
+        String frontendUrl = "http://localhost:3000"; // Update this to your frontend URL and port
+        String url = frontendUrl + "/updatePassword?token=" + token; // Updated URL
+        String message = messages.getMessage("message.resetPassword", null, locale);
+        return constructEmail("Reset Password", message + " \r\n" + url, user);
     }
 
     private SimpleMailMessage constructEmail(String subject, String body, User user) {
-        final SimpleMailMessage email = new SimpleMailMessage();
+        SimpleMailMessage email = new SimpleMailMessage();
         email.setSubject(subject);
         email.setText(body);
         email.setTo(user.getMail());

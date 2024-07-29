@@ -26,6 +26,11 @@ public class PasswordResetTokenServiceImpl  implements PasswordResetTokenService
                 : null;
     }
 
+    @Override
+    public void deleteByToken(String token) {
+        passwordResetTokenRepository.deleteByToken(token);
+    }
+
     private boolean isTokenFound(PasswordResetToken passToken) {
         return passToken != null;
     }

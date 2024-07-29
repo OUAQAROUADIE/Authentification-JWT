@@ -69,7 +69,7 @@ function Login() {
               <MDBInput wrapperClass='mb-4' label='Email address' id='formControlEmail' type='email' size="lg" value={username} onChange={(e) => setUsername(e.target.value)}/>
               <MDBInput wrapperClass='mb-4' label='Password' id='formControlPassword' type='password' size="lg" value={password} onChange={(e) => setPassword(e.target.value)}/>
               <MDBBtn className="mb-4 px-5" color='dark' size='lg' onClick={handleLogin}>Login</MDBBtn>
-              <a className="small text-muted" href="#!">Forgot password?</a>
+              <a className="small text-muted" href="/forgetPassword">Forgot password?</a>
               <p className="mb-5 pb-lg-2" style={{color: '#393f81'}}>Don't have an account? <a href="#!" style={{color: '#393f81'}}>Register here</a></p>
               <div className='d-flex flex-row justify-content-start'>
                 <a href="#!" className="small text-muted me-1">Terms of use.</a>
