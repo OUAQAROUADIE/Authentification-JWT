@@ -13,5 +13,4 @@ public class PasswordDto {
     private String newPassword;
 
 
-
 }

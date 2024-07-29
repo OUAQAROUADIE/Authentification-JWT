@@ -27,4 +27,6 @@ public interface Userservice {
     boolean checkIfValidOldPassword(User user, String oldpassword);
 
     void changeUserPassword(User user, String newPassword);
+
+    User getUserByPasswordResetToken(String token);
 }

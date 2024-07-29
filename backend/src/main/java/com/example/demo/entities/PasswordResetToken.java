@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.nio.channels.NonWritableChannelException;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -31,6 +32,7 @@ public class PasswordResetToken {
         this.token = token;
         this.user = user;
         this.expiryDate = calculateExpiryDate(EXPIRATION);
+
     }
     public static Date calculateExpiryDate(int expiryTimeInMinutes) {
         Calendar cal = Calendar.getInstance();

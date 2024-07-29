@@ -149,5 +149,19 @@ public class UserserviceImpl implements  Userservice{
         userRepository.save(user);
     }
 
+    @Override
+    public User getUserByPasswordResetToken(String token){
+       PasswordResetToken passwordResetToken = passwordResetTokenRepository.findByToken(token);
+
+       if(passwordResetToken == null){
+throw new IllegalArgumentException("the user is not found");
+       }
+
+       User user= passwordResetToken.getUser();
+
+       return user;
+
+    }
+
 
 }

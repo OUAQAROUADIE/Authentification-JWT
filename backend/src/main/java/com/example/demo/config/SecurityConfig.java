@@ -55,7 +55,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(ar -> ar
                         .requestMatchers("/auth/login/**").permitAll()// Allow access to login endpoint
                         .requestMatchers("/register/**").permitAll()
-                        .requestMatchers("/user/resetpassword/**").permitAll()
+                        .requestMatchers("/user/**").permitAll()
 
                         .anyRequest().authenticated()
                 )
