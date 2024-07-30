@@ -18,6 +18,7 @@ function App() {
         <Route path="/users/:id" element={<UserProfile />} /> 
         <Route path='/forgetPassword' element={<PasswordResetRequestForm/>} />
         <Route path='/updatePassword' element={<PasswordUpdateForm/>} />
+
       </Routes>
     </Router>
   );

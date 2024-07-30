@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { jwtDecode } from 'jwt-decode'; // Assurez-vous d'utiliser le bon import
 import { useParams } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css'; // Assurez-vous d'importer Bootstrap CSS
+import Logout from './Logout';
 
 const UserProfile = () => {
   const { id } = useParams(); // Récupérer l'ID utilisateur depuis les paramètres de l'URL
@@ -63,6 +64,7 @@ const UserProfile = () => {
           </div>
         </div>
       </div>
+      <Logout />
     </div>
   );
 };
